@@ -29,8 +29,10 @@ stop_accel = "(3) 11 10 13 0 0 0 0 0"
 
 # Accessory Module: Accessories
 right_signal_on = "(2) 10 1 1 0 0 0 0 0"
+right_signal_blink = "(2) 11 11 1 0 0 0 0 0"
 right_signal_off = "(2) 10 1 2 0 0 0 0 0"
 left_signal_on = "(2) 10 2 1 0 0 0 0 0"
+right_signal_blink = "(2) 11 11 2 0 0 0 0 0"
 left_signal_off = "(2) 10 2 2 0 0 0 0 0"
 tail_on = "(2) 10 4 1 0 0 0 0 0"
 tail_off = "(2) 10 4 2 0 0 0 0 0"
