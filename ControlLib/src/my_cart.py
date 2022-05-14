@@ -154,17 +154,27 @@ class MyCart:
 
     # Turn left
     def turnLeft(self, power = 128):
-        if self.vars["steering_motor_en"] != 1:
-            self.can.write(self.direction_controller.steering_motor.enable())
+        if power == 0:
+            if self.vars["steering_motor_en"] == 1:
+                self.can.write(self.direction_controller.steering_motor.disable())
 
-        self.can.write(self.direction_controller.steering_motor.left(power))
+        else:
+            if self.vars["steering_motor_en"] == 0:
+                self.can.write(self.direction_controller.steering_motor.enable())
+
+            self.can.write(self.direction_controller.steering_motor.left(power))
 
     # Turn right
     def turnRight(self, power = 128):
-        if self.vars["steering_motor_en"] != 1:
-            self.can.write(self.direction_controller.steering_motor.enable())
+        if power == 0:
+            if self.vars["steering_motor_en"] == 1:
+                self.can.write(self.direction_controller.steering_motor.disable())
 
-        self.can.write(self.direction_controller.steering_motor.right(power))
+        else:
+            if self.vars["steering_motor_en"] == 0:
+                self.can.write(self.direction_controller.steering_motor.enable())
+
+            self.can.write(self.direction_controller.steering_motor.right(power))
 
     def stopTurn(self):
         self.can.write(self.direction_controller.steering_motor.disable())
@@ -214,11 +224,15 @@ class MyCart:
             time.sleep(5)
 
     # Set the accelerator speed
-    def setSpeed(self, speed: int):
+    def setSpeed(self, speed: int = 200):
+        # Scale
         if (speed < 0):
                 speed = 0
         elif (speed > 255):
                 speed = 255
+
+        if speed == 0:
+            self.can.write(self.drive_controller.digital_accelerator.disable())
 
         self.can.write(self.drive_controller.digital_accelerator.setPotPos(speed))
 
@@ -229,6 +243,14 @@ class MyCart:
     # Disable the Accelerator
     def disableAccelerator(self):
         self.can.write(self.drive_controller.digital_accelerator.disable())
+
+    # Increment the accelerator
+    def incAccel(self):
+        self.cart.can.write(self.cart.drive_controller.digital_accelerator.increment())
+
+    # Decrement the accelerator
+    def decAccel(self):
+        self.cart.can.write(self.cart.drive_controller.digital_accelerator.decrement())
 
 
     # ----------------------------
@@ -269,12 +291,18 @@ class MyCart:
 
     # Blink the right signal
     def rightSignal(self):
-        self.can.write(self.accessory_controller.right_signal.blink())
+        if self.vars["right_signal"] == 0:
+            self.can.write(self.accessory_controller.right_signal.blink())
+        else:
+            self.can.write(self.accessory_controller.right_signal.off())
 
     # Blink the left signal
     def leftSignal(self):
-        self.can.write(self.accessory_controller.left_signal.blink())
-
+        if self.vars["left_signal"] == 0:
+            self.can.write(self.accessory_controller.left_signal.blink())
+        else:
+            self.can.write(self.accessory_controller.left_signal.off())
+        
     # Stop signalling
     def stopSignal(self):
         self.can.write(self.accessory_controller.left_signal.off())
@@ -282,7 +310,10 @@ class MyCart:
 
     # Hazards 
     def hazards(self):
-        self.can.write(self.accessory_controller.tail_light.blink())
+        if self.vars["tail_light"] == 0:
+            self.can.write(self.accessory_controller.tail_light.blink())
+        else:
+            self.can.write(self.accessory_controller.tail_light.off())
 
     # Stop hazards
     def stopHazards(self):
