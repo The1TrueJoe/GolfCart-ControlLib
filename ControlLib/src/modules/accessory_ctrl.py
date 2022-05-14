@@ -1,5 +1,4 @@
 import logging
-from tkinter import N
 
 # Drive Computer Core Library
 # Accessory Controller Module
