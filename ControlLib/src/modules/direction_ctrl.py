@@ -1,4 +1,4 @@
-import src.drive_control.computer_components.can_adapter as can_util
+import src.can_adapter as can_util
 import logging
 
 # Drive Computer Core Library
