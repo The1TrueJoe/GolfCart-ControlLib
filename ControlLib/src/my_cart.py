@@ -38,12 +38,13 @@ class MyCart:
         if self.config["log"]:
             # Setup the message logging
             self.logger = logging.getLogger("drive_hardware_manager")
+            self.logger.setLevel(logging.DEBUG)
             file_handler = logging.FileHandler(self.config["logging_path"] + "/drive_hardware_manager.log")
             file_handler.setFormatter(logging.Formatter("%(asctime)s - %(threadName)s - %(message)s"))
             self.logger.addHandler(file_handler)
 
         # Internal Hardware
-        self.can = CAN_Adapter(serial_port=self.config["can_adapter_port"], baud=int(self.config["can_adapter_baud"]))
+        self.can = CAN_Adapter(serial_port=self.config["can_adapter_port"], baud=int(self.config["can_adapter_baud"]), log=True, log_path=self.config["logging_path"])
 
         # Modules
         self.direction_controller = Direction_Controller(can_address = self.config["direction_controller_addr"])
