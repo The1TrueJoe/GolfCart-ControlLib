@@ -1,4 +1,4 @@
-import src.can_adapter as can_util
+import ControlLib.ControlLib.src.can_adapter as can_util
 import logging
 
 # Drive Computer Core Library
@@ -27,114 +27,95 @@ class Direction_Controller:
 
         else:
             self.logger = None
-
-        # Components
-        self.steering_motor = self.Steering_Motor(can_address=self.can_address, logger=self.logger)
-        self.wheel_input = self.Wheel(can_address=self.can_address, logger=self.logger)
-        self.brake_motor = self.Brake_Motor(can_address=self.can_address, logger=self.logger)
     
     # ----------------------------
     # Steering Motor Controller
     # ----------------------------
 
-    class Steering_Motor:
+    # Disable Steering Motor
+    def str_disable(self):
+        if not self.logger == None:
+            self.logger.debug("Disabling Steering Motor")
+        return f"({self.can_address}) 10 1 10 1 0 0 0 0"
 
-        def __init__(self, can_address, logger = None):
-            self.can_address = can_address
-            self.logger = logger
+    # Enable Steering Motor
+    def str_enable(self):
+        if not self.logger == None:
+            self.logger.debug("Enabling Steering Motor")
+        return f"({self.can_address}) 10 1 10 2 0 0 0 0"
 
-        # Disable Steering Motor
-        def disable(self):
-            if not self.logger == None:
-                self.logger.debug("Disabling Steering Motor")
-            return f"({self.can_address}) 10 1 10 1 0 0 0 0"
+    def str_reqStatus(self):
+        if not self.logger == None:
+            self.logger.debug("Requesting the Steering Motor Status")
+        return f"({self.can_address}) 12 1 10 0 0 0 0"
 
-        # Enable Steering Motor
-        def enable(self):
-            if not self.logger == None:
-                self.logger.debug("Enabling Steering Motor")
-            return f"({self.can_address}) 10 1 10 2 0 0 0 0"
+    # Run Motor Forwards
+    def str_left(self, power = 255):
+        if not self.logger == None:
+            self.logger.debug(f"Running Steering Motor Forwards, Power: {power}")
+        return f"({self.can_address}) 10 1 12 1 {power} 0 0 0"
 
-        def reqStatus(self):
-            if not self.logger == None:
-                self.logger.debug("Requesting the Steering Motor Status")
-            return f"({self.can_address}) 12 1 10 0 0 0 0"
+    # Run Motor Backwards
+    def str_right(self, power = 255):
+        if not self.logger == None:
+            self.logger.debug(f"Running Steering Motor Backwards, Power: {power}")
+        return f"({self.can_address}) 10 1 12 2 {power} 0 0 0"
 
-        # Run Motor Forwards
-        def left(self, power = 255):
-            if not self.logger == None:
-                self.logger.debug(f"Running Steering Motor Forwards, Power: {power}")
-            return f"({self.can_address}) 10 1 12 1 {power} 0 0 0"
+    def str_goTo(self, postion, power = 255):
+        if not self.logger == None:
+            self.logger.debug(f"Running to Postion {postion} at {power}")
+        return f"({self.can_address}) 11 1 {can_util.sixteentoeight_coarse(postion)} {can_util.sixteentoeight_fine(postion)} {power} 0 0 0"
 
-        # Run Motor Backwards
-        def right(self, power = 255):
-            if not self.logger == None:
-                self.logger.debug(f"Running Steering Motor Backwards, Power: {power}")
-            return f"({self.can_address}) 10 1 12 2 {power} 0 0 0"
-
-        def goTo(self, postion, power = 255):
-            if not self.logger == None:
-                self.logger.debug(f"Running to Postion {postion} at {power}")
-            return f"({self.can_address}) 11 1 {can_util.sixteentoeight_coarse(postion)} {can_util.sixteentoeight_fine(postion)} {power} 0 0 0"
-
-        # Request the steering motor position
-        def reqPos(self):
-            if not self.logger == None:
-                self.logger.debug("Requesting to Current Steering Motor Position")
-            return f"({self.can_address}) 12 1 16 0 0 0 0"
+    # Request the steering motor position
+    def str_reqPos(self):
+        if not self.logger == None:
+            self.logger.debug("Requesting to Current Steering Motor Position")
+        return f"({self.can_address}) 12 1 16 0 0 0 0"
 
     # ----------------------------
     # Steering Wheel Input
     # ----------------------------
 
-    class Wheel:
+    def wheel_reqPos(self):
+        if not self.logger == None:
+            self.logger.info("Requesing Steering Wheel Change")
+        return f"({self.can_address}) 12 1 15 0 0 0 0 0"
 
-        def __init__(self, can_address, logger = None):
-            self.can_address = can_address
-            self.logger = logger
+    # ----------------------------
+    # Brake Motor Controller
+    # ----------------------------
 
-        def reqPos(self):
-            if not self.logger == None:
-                self.logger.info("Requesing Steering Wheel Change")
-            return f"({self.can_address}) 12 1 15 0 0 0 0 0"
+    # Disable Brake Motor
+    def brk_disable(self):
+        if not self.logger == None:
+            self.logger.debug("Disabling Brake Motor")
+        return f"({self.can_address}) 10 2 10 1 0 0 0 0"
 
-    class Brake_Motor:
+    # Enable Steering Motor
+    def brk_enable(self):
+        if not self.logger == None:
+            self.logger.debug("Enabling Brake Motor")
+        return f"({self.can_address}) 10 2 10 2 0 0 0 0"
 
-        def __init__(self, can_address, logger = None):
-            self.can_address = can_address
-            self.logger = logger
+    def brk_reqStatus(self):
+        if not self.logger == None:
+            self.logger.debug("Requesting the Brake Motor Status")
+        return f"({self.can_address}) 12 2 10 0 0 0 0"
 
-        # Disable Brake Motor
-        def disable(self):
-            if not self.logger == None:
-                self.logger.debug("Disabling Brake Motor")
-            return f"({self.can_address}) 10 2 10 1 0 0 0 0"
+    # Run Motor Forwards
+    def brk_pull(self, power = 255):
+        if not self.logger == None:
+            self.logger.debug(f"Running Brake Motor Forwards, Power: {power}")
+        return f"({self.can_address}) 10 2 12 1 {power} 0 0 0"
 
-        # Enable Steering Motor
-        def enable(self):
-            if not self.logger == None:
-                self.logger.debug("Enabling Brake Motor")
-            return f"({self.can_address}) 10 2 10 2 0 0 0 0"
+    # Run Motor Backwards
+    def brk_push(self, power = 255):
+        if not self.logger == None:
+            self.logger.debug(f"Running Brake Motor Backwards, Power: {power}")
+        return f"({self.can_address}) 10 2 12 2 {power} 0 0 0"
 
-        def reqStatus(self):
-            if not self.logger == None:
-                self.logger.debug("Requesting the Brake Motor Status")
-            return f"({self.can_address}) 12 2 10 0 0 0 0"
-
-        # Run Motor Forwards
-        def pull(self, power = 255):
-            if not self.logger == None:
-                self.logger.debug(f"Running Brake Motor Forwards, Power: {power}")
-            return f"({self.can_address}) 10 2 12 1 {power} 0 0 0"
-
-        # Run Motor Backwards
-        def push(self, power = 255):
-            if not self.logger == None:
-                self.logger.debug(f"Running Brake Motor Backwards, Power: {power}")
-            return f"({self.can_address}) 10 2 12 2 {power} 0 0 0"
-
-        # Request the steering motor position
-        def reqPos(self):
-            if not self.logger == None:
-                self.logger.debug("Requesting to Current Brake Motor Position")
-            return f"({self.can_address}) 12 2 16 0 0 0 0"
+    # Request the steering motor position
+    def brk_reqPos(self):
+        if not self.logger == None:
+            self.logger.debug("Requesting to Current Brake Motor Position")
+        return f"({self.can_address}) 12 2 16 0 0 0 0"

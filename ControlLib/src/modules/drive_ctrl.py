@@ -29,82 +29,62 @@ class Drive_Controller:
             self.logger.addHandler(file_handler)
 
         else:
-            self.log_messages = None
+            self.logger = None
 
-        # Components
-        self.digital_accelerator = self.Digital_Accelerator(can_address=self.can_address, logger=self.logger)
-        self.direction_controller = self.Direction_Controller(can_address=self.can_address, logger=self.logger)
-        self.accelerator_pedal = self.Accelerator_Pedal(can_address=self.can_address, logger=self.logger)
+    def setAccelPos(self, pos):
+        if not self.logger == None:
+            self.logger.info("Setting Accelerator Pot Position")
+        return f"({self.can_address}) 10 10 10 {pos} 0 0 0 0"
 
-    # Digital Accelerator Component
-    class Digital_Accelerator:
-        
-        def __init__(self, can_address, logger = None):
-            self.logger = logger
-            self.can_address = can_address
+    def increment(self):
+        if not self.logger == None:
+            self.logger.info("Incrementing Accelerator")
+        return f"({self.can_address}) 11 10 1 0 0 0 0 0"
 
-        def setPotPos(self, pos):
-            if not self.logger == None:
-                self.logger.info("Setting Accelerator Pot Position")
-            return f"({self.can_address}) 10 10 10 {pos} 0 0 0 0"
+    def decrement(self):
+        if not self.logger == None:
+            self.logger.info("Decrementing Accelerator")
+        return f"({self.can_address}) 11 10 1 0 0 0 0 0"
 
-        def increment(self):
-            if not self.logger == None:
-                self.logger.info("Incrementing Accelerator")
-            return f"({self.can_address}) 11 10 1 0 0 0 0 0"
+    def reqAccelPos(self):
+        self.logger.info("Requesting Accelerometer Positon")
+        return f"({self.can_address}) 12 10 10 0 0 0 0 0"
 
-        def decrement(self):
-            if not self.logger == None:
-                self.logger.info("Decrementing Accelerator")
-            return f"({self.can_address}) 11 10 1 0 0 0 0 0"
+    def enable(self):
+        if not self.logger == None:
+            self.logger.info("Enabling Digital Accelerator")
+        return f"({self.can_address}) 10 10 15 1 0 0 0 0"
 
-        def reqPos(self):
-            self.logger.info("Requesting Accelerometer Positon")
-            return f"({self.can_address}) 12 10 10 0 0 0 0 0"
+    def disable(self):
+        if not self.logger == None:
+            self.logger.info("Disabling Digital Accelerator")
+        return f"({self.can_address}) 10 10 15 2 0 0 0 0"
 
-        def enable(self):
-            if not self.logger == None:
-                self.logger.info("Enabling Digital Accelerator")
-            return f"({self.can_address}) 10 10 15 1 0 0 0 0"
+    def reqEn(self):
+        if not self.logger == None:
+            self.logger.info("Requesing Enable Status")
+        return f"({self.can_address}) 12 10 15 0 0 0 0 0"
 
-        def disable(self):
-            if not self.logger == None:
-                self.logger.info("Disabling Digital Accelerator")
-            return f"({self.can_address}) 10 10 15 2 0 0 0 0"
+    def reqPedalPos(self):
+        if not self.logger == None:
+            self.logger.info("Requesing Accelerator Pedal Pos")
+        return f"({self.can_address} 12 10 13 0 0 0 0 0"
 
-        def reqEn(self):
-            if not self.logger == None:
-                self.logger.info("Requesing Enable Status")
-            return f"({self.can_address}) 12 10 15 0 0 0 0 0"
+    def __init__(self, can_address, logger = None):
+        self.logger = logger
+        self.can_address = can_address
 
-    class Accelerator_Pedal:
+    def reverse(self):
+        if not self.logger == None:
+            self.logger.info("Switching to Reverse")
+        return f"({self.can_address}) 10 13 2 0 0 0 0 0"
 
-        def __init__(self, can_address, logger = None):
-            self.logger = logger
-            self.can_address = can_address
+    def forwards(self):
+        if not self.logger == None:
+            self.logger.info("Switching to Forwards")
+        return f"({self.can_address}) 10 13 1 0 0 0 0 0"
 
-        def reqPos(self):
-            if not self.logger == None:
-                self.logger.info("Requesing Accelerator Pedal Pos")
-            return f"({self.can_address} 12 10 13 0 0 0 0 0"
-
-    class Direction_Controller:
-
-        def __init__(self, can_address, logger = None):
-            self.logger = logger
-            self.can_address = can_address
-
-        def reverse(self):
-            if not self.logger == None:
-                self.logger.info("Switching to Reverse")
-            return f"({self.can_address}) 10 13 2 0 0 0 0 0"
-
-        def forwards(self):
-            if not self.logger == None:
-                self.logger.info("Switching to Forwards")
-            return f"({self.can_address}) 10 13 1 0 0 0 0 0"
-
-        def reqDirection(self):
-            if not self.logger == None:
-                self.logger.info("Requesing Direction")
-            return f"({self.can_address}) 10 12 0 0 0 0 0 0"
+    def reqDirection(self):
+        if not self.logger == None:
+            self.logger.info("Requesing Direction")
+        return f"({self.can_address}) 10 12 0 0 0 0 0 0"

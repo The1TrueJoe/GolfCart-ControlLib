@@ -6,14 +6,14 @@ import sys
 
 from numpy import abs
 
-from src.util.util import to_color
+from ControlLib.ControlLib.src.util.util import to_color
 
-from src.can_adapter import CAN_Adapter
-import src.can_adapter as can_util
+from ControlLib.ControlLib.src.can_adapter import CAN_Adapter
+import ControlLib.ControlLib.src.can_adapter as can_util
 
-from src.modules.accessory_ctrl import Accessory_Controller
-from src.modules.direction_ctrl import Direction_Controller
-from src.modules.drive_ctrl import Drive_Controller
+from ControlLib.ControlLib.src.modules.accessory_ctrl import Accessory_Controller
+from ControlLib.ControlLib.src.modules.direction_ctrl import Direction_Controller
+from ControlLib.ControlLib.src.modules.drive_ctrl import Drive_Controller
 
 # Drive Computer Core Library
 # Cart Control
@@ -48,9 +48,9 @@ class MyCart:
         self.can.send_string("Hello!")
 
         # Modules
-        self.direction_controller = Direction_Controller(can_address = self.config["direction_controller_addr"])
-        self.accessory_controller = Accessory_Controller(can_address = self.config["accessory_controller_addr"])
-        self.drive_controller = Drive_Controller(can_address = self.config["drive_controller_addr"])
+        self.direction_controller = Direction_Controller()
+        self.accessory_controller = Accessory_Controller()
+        self.drive_controller = Drive_Controller()
 
         # Sub-Threads 
         self.listener = threading.Thread(target=self.listen, name="message_listener", daemon=True)   # Start Message RX Processing
@@ -158,28 +158,28 @@ class MyCart:
     def turnLeft(self, power = 128):
         if power == 0:
             if self.vars["steering_motor_en"] == 1:
-                self.can.write(self.direction_controller.steering_motor.disable())
+                self.can.write(self.direction_controller.str_disable())
 
         else:
             if self.vars["steering_motor_en"] == 0:
-                self.can.write(self.direction_controller.steering_motor.enable())
+                self.can.write(self.direction_controller.str_enable())
 
-            self.can.write(self.direction_controller.steering_motor.left(power))
+            self.can.write(self.direction_controller.str_left(power))
 
     # Turn right
     def turnRight(self, power = 128):
         if power == 0:
             if self.vars["steering_motor_en"] == 1:
-                self.can.write(self.direction_controller.steering_motor.disable())
+                self.can.write(self.direction_controller.str_disable())
 
         else:
             if self.vars["steering_motor_en"] == 0:
-                self.can.write(self.direction_controller.steering_motor.enable())
+                self.can.write(self.direction_controller.str_enable())
 
-            self.can.write(self.direction_controller.steering_motor.right(power))
+            self.can.write(self.direction_controller.str_right(power))
 
     def stopTurn(self):
-        self.can.write(self.direction_controller.steering_motor.disable())
+        self.can.write(self.direction_controller.str_disable())
 
     # Run to positon
     def turnToPos(self, position, power = 128):
@@ -190,9 +190,9 @@ class MyCart:
                 self.rightSignal()
 
         if self.vars["steering_motor_en"] != 1:
-            self.can.write(self.direction_controller.steering_motor.enable())
+            self.can.write(self.direction_controller.str_enable())
 
-        self.can.write(self.direction_controller.steering_motor.goTo(position, power))
+        self.can.write(self.direction_controller.str_goTo(position, power))
 
     # ----------------------------
     # Accel
@@ -202,16 +202,16 @@ class MyCart:
     def brake(self):
         # Disable the accelerator
         self.setSpeed(0)
-        self.can.write(self.drive_controller.digital_accelerator.disable)
+        self.can.write(self.drive_controller.disable)
 
         # Brake
-        self.can.write(self.direction_controller.brake_motor.pull())
-        self.can.write(self.direction_controller.brake_motor.enable())
+        self.can.write(self.direction_controller.brk_pull())
+        self.can.write(self.direction_controller.brk_enable())
 
     # Disengages brakes
     def disengageBrakes(self):
-        self.can.write(self.direction_controller.brake_motor.push())
-        self.can.write(self.direction_controller.brake_motor.enable())
+        self.can.write(self.direction_controller.brk_push())
+        self.can.write(self.direction_controller.brk_enable())
 
     # Come to a complete stop
     def completeStop(self):
@@ -234,25 +234,25 @@ class MyCart:
                 speed = 255
 
         if speed == 0:
-            self.can.write(self.drive_controller.digital_accelerator.disable())
+            self.can.write(self.drive_controller.disable())
 
-        self.can.write(self.drive_controller.digital_accelerator.setPotPos(speed))
+        self.can.write(self.drive_controller.setAccelPos(speed))
 
     # Enable the Accelerator
     def enableAccelerator(self):
-        self.can.write(self.drive_controller.digital_accelerator.enable())
+        self.can.write(self.drive_controller.enable())
 
     # Disable the Accelerator
     def disableAccelerator(self):
-        self.can.write(self.drive_controller.digital_accelerator.disable())
+        self.can.write(self.drive_controller.disable())
 
     # Increment the accelerator
     def incAccel(self):
-        self.cart.can.write(self.cart.drive_controller.digital_accelerator.increment())
+        self.can.write(self.drive_controller.increment())
 
     # Decrement the accelerator
     def decAccel(self):
-        self.cart.can.write(self.cart.drive_controller.digital_accelerator.decrement())
+        self.can.write(self.drive_controller.decrement())
 
 
     # ----------------------------
@@ -268,7 +268,7 @@ class MyCart:
         self.completeStop()
         
         # Change mode
-        self.can.write(self.drive_controller.direction_controller.forwards())
+        self.can.write(self.drive_controller.forwards())
 
         # Disengage brake pull
         self.disengageBrakes()
@@ -282,7 +282,7 @@ class MyCart:
         self.completeStop()
 
         # Change mode
-        self.can.write(self.drive_controller.direction_controller.reverse())
+        self.can.write(self.drive_controller.reverse())
 
         # Disengage brake pull
         self.disengageBrakes()
@@ -294,37 +294,37 @@ class MyCart:
     # Blink the right signal
     def rightSignal(self):
         if self.vars["right_signal"] == 0:
-            self.can.write(self.accessory_controller.right_signal.blink())
+            self.can.write(self.accessory_controller.right_signal_blink())
         else:
-            self.can.write(self.accessory_controller.right_signal.off())
+            self.can.write(self.accessory_controller.right_signal_off())
 
     # Blink the left signal
     def leftSignal(self):
         if self.vars["left_signal"] == 0:
-            self.can.write(self.accessory_controller.left_signal.blink())
+            self.can.write(self.accessory_controller.left_signal_blink())
         else:
-            self.can.write(self.accessory_controller.left_signal.off())
+            self.can.write(self.accessory_controller.left_signal_off())
         
     # Stop signalling
     def stopSignal(self):
-        self.can.write(self.accessory_controller.left_signal.off())
-        self.can.write(self.accessory_controller.right_signal.off())
+        self.can.write(self.accessory_controller.left_signal_off())
+        self.can.write(self.accessory_controller.right_signal_off())
 
     # Hazards 
     def hazards(self):
         if self.vars["tail_light"] == 0:
-            self.can.write(self.accessory_controller.tail_light.blink())
+            self.can.write(self.accessory_controller.tail_lights_blink())
         else:
-            self.can.write(self.accessory_controller.tail_light.off())
+            self.can.write(self.accessory_controller.tail_lights_off())
 
     # Stop hazards
     def stopHazards(self):
-        self.can.write(self.accessory_controller.tail_light.off())
+        self.can.write(self.accessory_controller.tail_lights_off())
 
     # ----------------------------
     # Horn
     # ----------------------------
 
     def honk(self):
-        self.can.write(self.accessory_controller.horn.honk())
+        self.can.write(self.accessory_controller.horn_honk())
 
