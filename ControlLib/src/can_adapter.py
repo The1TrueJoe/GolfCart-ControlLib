@@ -85,9 +85,9 @@ class CAN_Adapter:
     #
     # message: Message to send
 
-    def send_string_to_adapter(self, message):
+    def send_string(self, message):
         if self.log:
-            self.logger.debug("MAN: " + message)
+            self.logger.debug(message)
         self.arduino.write(message.encode())
 
 
