@@ -40,30 +40,37 @@ class CAN_Adapter:
     # serial_port: Serial port where the Arduino CAN Adapter is located
     # baud: Arduino serial baud rate
 
-    def __init__(self, serial_port = '/dev/ttyUSB0', baud = 11520):
+    def __init__(self, serial_port, baud = 11520, log = True, log_path = "logs"):
         # Setup the message logging
-        self.logger = logging.getLogger("can")
-        file_handler = logging.FileHandler("logs/can.log")
-        file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
-        self.logger.addHandler(file_handler)
+        self.log = log
+        if self.log:
+            self.logger = logging.getLogger("can")
+            self.logger.setLevel(logging.DEBUG)
+            file_handler = logging.FileHandler(log_path + "/can.log")
+            file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
+            self.logger.addHandler(file_handler)
 
-        # Init Message
-        self.logger.info("Initializing CAN Adapter")
+            # Init Message
+            self.logger.info("Initializing CAN Adapter")
 
         try:
             # Attempt to establish connection to CAN adapter
-            self.logger.info(f"Attempting to connect to {serial_port} at {baud} baud")
+            if self.log:
+                self.logger.info(f"Attempting to connect to {serial_port} at {baud} baud")
             self.arduino = serial.Serial(port = serial_port, baudrate = baud, timeout = .1)
 
-            self.logger.info(f"Connection sucessful to {serial_port} at {baud} baud")
+            if self.log:
+                self.logger.info(f"Connection sucessful to {serial_port} at {baud} baud")
 
         except:
-            self.logger.fatal(f"Failed To Connect to {serial_port} at {baud} baud")
+            if self.log:
+                self.logger.fatal(f"Failed To Connect to {serial_port} at {baud} baud")
             print("FATAL: Cannot connect to the drive computer's CAN adapter")
             quit()
 
         # Init Message
-        self.logger.info("CAN Adapter Initialized")
+        if self.log:
+            self.logger.info("CAN Adapter Initialized")
             
 
     # Return a reference to the device
@@ -79,7 +86,8 @@ class CAN_Adapter:
     # message: Message to send
 
     def send_string_to_adapter(self, message):
-        self.logger.debug("MAN: " + message)
+        if self.log:
+            self.logger.debug("MAN: " + message)
         self.arduino.write(message.encode())
 
 
@@ -91,7 +99,9 @@ class CAN_Adapter:
         output = self.arduino.readLine()
 
         if ">" in output:
-            self.logger.debug("RX: " + str(output))
+            if self.log:
+                self.logger.debug("RX: " + str(output))
+
             return str(output).replace("CAN-RX: ", "")
 
         else:
@@ -118,5 +128,7 @@ class CAN_Adapter:
 
     # Send CAN message
     def write(self, message):
-        self.logger.debug(f"TX: {message}")
+        if self.log:
+            self.logger.debug(f"TX: {message}")
+
         self.arduino.write((f">{message}").encode())
