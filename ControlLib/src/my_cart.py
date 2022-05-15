@@ -45,6 +45,7 @@ class MyCart:
 
         # Internal Hardware
         self.can = CAN_Adapter(serial_port=self.config["can_adapter_port"], baud=int(self.config["can_adapter_baud"]), log=True, log_path=self.config["logging_path"])
+        self.can.send_string("Hello!")
 
         # Modules
         self.direction_controller = Direction_Controller(can_address = self.config["direction_controller_addr"])
