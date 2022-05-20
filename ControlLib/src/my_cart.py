@@ -69,10 +69,15 @@ class MyCart:
             "horn": 0,
             "buzzer": 0,
             "steering_motor_en": 0,
+            "steering_motor_direc": 0,
+            "steering_motor_pwm": 0,
             "steering_wheel": 0, # 1 No Change, 2 Left, 3 Right
             "steering_pos": 0,
             "brake_motor_en": 0,
-            "brake_pos": 0
+            "brake_motor_direc": 0,
+            "brake_motor_pwm": 0,
+            "brake_pos": 0,
+            "brake_pedal": 0
 
         }
 
@@ -107,19 +112,26 @@ class MyCart:
                 message_id = can_util.getID()
                 message = can_util.removeID(message=message).split(" ")
 
-                if message[0] == "10" and message[1] == "10": # Is a data response message
+                if message[0] == "12" and message[1] == "12": # Is a data response message
                     if message_id == "3": # Message from drive controller
                         if message[2] == "10":
                             if message[3] == "10":
-                                self.vars["accel_pos"] = can_util.eighttosixteen(int(message[6]), int(message[7]))
+                                self.vars["accel_pos"] = int(message[7])
                             elif message[3] == "13":
-                                self.vars["accel_pedal_pos"] = can_util.eighttosixteen(int(message[6]), int(message[7]))
+                                self.vars["accel_pedal_pos"] = int(message[7])
                             elif message[3] == "15":
                                 self.vars["accel_enable"] = can_util.canbool(int(message[7]))
                         elif message[2] == "13":
                             self.vars["direction"] = can_util.canbool(int(message[7]))
                         elif message[2] == "15":
                             self.vars["accel_pedal_sw"] = can_util.canbool(int(message[7]))
+                        elif message[2] == "12":
+                            if message_id == "3":
+                                self.vars["accel_enable"] = can_util.canbool(int(message[3]))
+                                self.vars["direction"] = can_util.canbool(int(message[4]))
+                                self.vars["accel_pos"] = int(message[5])
+                                self.vars["accel_pedal_pos"] = int(message[6])
+                                self.vars["accel_pedal_sw"] = can_util.canbool(int(message[7]))
 
                     elif message_id == "2":
                         if message[2] == "10":
@@ -135,6 +147,21 @@ class MyCart:
                                 self.vars["horn"] = can_util.canbool(int(message[7]))
                             elif message[3] == "6":
                                 self.vars["buzzer"] = can_util.canbool(int(message[7]))
+                        elif message[2] == "15":
+                            self.vars["brake_pedal"] = can_util.canbool(int(message[7]))
+                        elif message[2] == "12":
+                            if message[3] == "1":
+                                self.vars["right_signal"] = can_util.canbool(int(message[4]))
+                                self.vars["left_signal"] = can_util.canbool(int(message[5]))
+                                self.vars["head_light"] = can_util.canbool(int(message[6]))
+                                self.vars["tail_light"] = can_util.canbool(int(message[7]))
+
+                            elif message[3] == "2":
+                                self.vars["horn"] = can_util.canbool(int(message[4]))
+                                self.vars["buzzer"] = can_util.canbool(int(message[5]))
+
+                            elif message[3] == "3":
+                                self.vars["brake_pedal"] = can_util.canbool(int(message[4]))
 
                     elif message_id == "1":
                         if message[2] == "1":
@@ -143,12 +170,25 @@ class MyCart:
                             elif message[3] == "15":
                                 self.vars["steering_wheel"] = int(message[7])
                             elif message[3] == "16":
-                                self.vars["steering_pos"] = can_util.eighttosixteen(int(message[6]), int(message[7]))
+                                self.vars["steering_pos"] = int(message[7])
                         elif message[2] == "2":
                             if message[3] == "10":
                                 self.vars["brake_motor_en"] = can_util.canbool(int(message[7]))
                             elif message[3] == "16":
-                                self.vars["brake_pos"] = can_util.eighttosixteen(int(message[6]), int(message[7]))
+                                self.vars["brake_pos"] = int(message[7])
+                        elif message[2] == "12":
+                            if message[3] == "1":
+                                self.vars["steering_motor_en"] = can_util.canbool(int(message[4]))
+                                self.vars["steering_motor_direc"] = can_util.canbool(int(message[5]))
+                                self.vars["steering_motor_pwm"] = can_util.canbool(int(message[6]))
+                                self.vars["steering_pos"] = int(message[7])
+
+                            elif message[3] == "2":
+                                self.vars["brake_motor_en"] = can_util.canbool(int(message[4]))
+                                self.vars["brake_motor_direc"] = can_util.canbool(int(message[5]))
+                                self.vars["brake_motor_pwm"] = can_util.canbool(int(message[6]))
+                                self.vars["brake_pos"] = int(message[7])
+
 
     # ----------------------------
     # Wheel
@@ -247,12 +287,12 @@ class MyCart:
         self.can.write(self.drive_controller.disable())
 
     # Increment the accelerator
-    def incAccel(self):
-        self.can.write(self.drive_controller.increment())
+    def incAccel(self, count = 0):
+        self.can.write(self.drive_controller.increment(count))
 
     # Decrement the accelerator
-    def decAccel(self):
-        self.can.write(self.drive_controller.decrement())
+    def decAccel(self, count = 0):
+        self.can.write(self.drive_controller.decrement(count))
 
 
     # ----------------------------

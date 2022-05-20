@@ -41,10 +41,20 @@ class Drive_Controller:
             self.logger.info("Incrementing Accelerator")
         return f"({self.can_address}) 11 10 1 0 0 0 0 0"
 
+    def increment(self, count):
+        if not self.logger == None:
+            self.logger.info(f"Incrementing Accelerator by {count}")
+        return f"({self.can_address}) 11 10 1 {count} 0 0 0 0"
+
     def decrement(self):
         if not self.logger == None:
             self.logger.info("Decrementing Accelerator")
         return f"({self.can_address}) 11 10 1 0 0 0 0 0"
+
+    def decrement(self, count):
+        if not self.logger == None:
+            self.logger.info(f"Decrementing Accelerator by {count}")
+        return f"({self.can_address}) 11 10 1 {count} 0 0 0 0"
 
     def reqAccelPos(self):
         self.logger.info("Requesting Accelerometer Positon")
@@ -53,12 +63,12 @@ class Drive_Controller:
     def enable(self):
         if not self.logger == None:
             self.logger.info("Enabling Digital Accelerator")
-        return f"({self.can_address}) 10 10 15 1 0 0 0 0"
+        return f"({self.can_address}) 10 10 15 2 0 0 0 0"
 
     def disable(self):
         if not self.logger == None:
             self.logger.info("Disabling Digital Accelerator")
-        return f"({self.can_address}) 10 10 15 2 0 0 0 0"
+        return f"({self.can_address}) 10 10 15 1 0 0 0 0"
 
     def reqEn(self):
         if not self.logger == None:
@@ -77,12 +87,12 @@ class Drive_Controller:
     def reverse(self):
         if not self.logger == None:
             self.logger.info("Switching to Reverse")
-        return f"({self.can_address}) 10 13 2 0 0 0 0 0"
+        return f"({self.can_address}) 10 13 1 0 0 0 0 0"
 
     def forwards(self):
         if not self.logger == None:
             self.logger.info("Switching to Forwards")
-        return f"({self.can_address}) 10 13 1 0 0 0 0 0"
+        return f"({self.can_address}) 10 13 2 0 0 0 0 0"
 
     def reqDirection(self):
         if not self.logger == None:
