@@ -28,10 +28,6 @@ class Accessory_Controller:
         file_handler.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
         self.logger.addHandler(file_handler)
 
-        # Init Message
-        self.logger(f"Initializing Accessory Controller at address: {self.can_address}")
-
-
     # ----------------------------
     # Right Turn Signal
     # ----------------------------
