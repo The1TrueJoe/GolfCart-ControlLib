@@ -37,7 +37,6 @@ class Drive_Controller:
         return f"({self.can_address}) 12 10 10 0 0 0 0 0"
 
     def enable(self):
-        self.logger.info("Enabling Digital Accelerator")
         return f"({self.can_address}) 10 10 15 2 0 0 0 0"
 
     def disable(self):
