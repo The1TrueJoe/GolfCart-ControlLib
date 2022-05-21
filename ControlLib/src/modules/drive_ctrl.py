@@ -14,7 +14,7 @@
 
 class Drive_Controller:
 
-    def __int__(self):
+    def __init__(self):
         # CAN Address
         self.can_address = 3
 
