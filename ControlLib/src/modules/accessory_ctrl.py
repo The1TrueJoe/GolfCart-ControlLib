@@ -16,7 +16,7 @@ class Accessory_Controller:
     #
     # can_address: CAN Address of the module
 
-    def __int__(self):
+    def __init__(self):
         # CAN Address
         self.can_address = 2
 

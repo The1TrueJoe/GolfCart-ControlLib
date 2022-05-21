@@ -12,7 +12,7 @@ import ControlLib.ControlLib.src.can_adapter as can_util
 
 class Direction_Controller:
 
-    def __int__(self):
+    def __init__(self):
         # CAN Address
         self.can_address = 1
     
