@@ -7,20 +7,20 @@
 # Direction Module: Steering
 turn_left = "(1) 10 1 12 1 255 0 0 0"
 turn_right = "(1) 10 1 12 2 255 0 0 0"
-en_turn = "(1) 10 1 10 1 0 0 0 0"
-stop_turn = "(1) 10 1 10 2 0 0 0 0"
+enable_turn = "(1) 10 1 10 2 0 0 0 0"
+stop_turn = "(1) 10 1 10 1 0 0 0 0"
 
 # Direction Module: Brakes
 pull_brakes = "(1) 10 2 12 1 255 0 0 0"
 release_brakes = "(1) 10 2 12 2 255 0 0 0"
 disable_brakes = "(1) 10 2 10 1 0 0 0 0"
-enable_brakes = "(1) 10 2 10 1 0 0 0 0"
+enable_brakes = "(1) 10 2 10 2 0 0 0 0"
 
 # Drive Module: Direction Control
-disable = "(3) 10 10 14 2 0 0 0 0"
-enable = "(3) 10 10 14 1 0 0 0 0"
-forward = "(3) 10 13 2 0 0 0 0 0"
-reverse = "(3) 10 13 1 0 0 0 0 0"
+disable = "(3) 10 10 14 1 0 0 0 0"
+enable = "(3) 10 10 14 2 0 0 0 0"
+forward = "(3) 10 13 1 0 0 0 0 0"
+reverse = "(3) 10 13 2 0 0 0 0 0"
 
 # Drive Module: Speed Control
 accelerate = "(3) 11 10 1 10 0 0 0 0"
