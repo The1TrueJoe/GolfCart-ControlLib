@@ -35,11 +35,11 @@ class Drive_Controller:
         return f"({self.can_address}) 11 10 1 0 0 0 0 0"
 
     def increment(self, count):
-        elf.logger.info(f"Incrementing Accelerator by {count}")
+        self.logger.info(f"Incrementing Accelerator by {count}")
         return f"({self.can_address}) 11 10 1 {count} 0 0 0 0"
 
     def decrement(self):
-        elf.logger.info("Decrementing Accelerator")
+        self.logger.info("Decrementing Accelerator")
         return f"({self.can_address}) 11 10 2 0 0 0 0 0"
 
     def decrement(self, count):
